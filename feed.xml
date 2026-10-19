@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+  <title>知微</title>
+  <link>https://chaosharm0212.github.io/blog/</link>
+  <description>这里是我存放技术笔记与零散思考的地方。多数文章关于前端工程、工具与取舍，也有一些关于写作和生活的随笔。不追热点，只写自己想明白的事。</description>
+  <language>zh-CN</language>
+  <lastBuildDate>Mon, 19 Oct 2026 02:41:18 +0000</lastBuildDate>
+  <generator>tools/build-feed.mjs</generator>
+  <atom:link href="https://chaosharm0212.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
+  <item>
+    <title>为什么我又手写了一个博客</title>
+    <link>https://chaosharm0212.github.io/blog/#/post/why-this-blog</link>
+    <guid isPermaLink="false">https://chaosharm0212.github.io/blog/#/post/why-this-blog</guid>
+    <pubDate>Wed, 26 Nov 2025 00:00:00 +0800</pubDate>
+    <description>在无数个「三分钟建站」的方案里，我选了最笨的那条路：手写 HTML、CSS 和几百行 JavaScript。这篇聊聊取舍，以及一个博客真正需要多少功能。</description>
+    <category>随笔</category>
+    <category>前端</category>
+    <category>设计</category>
+    <content:encoded><![CDATA[<p>大概每隔两年，我都会重新折腾一次博客。上一次用的是现成的静态站点生成器加一套主题，从克隆仓库到第一篇文章上线，花了十一分钟。</p>
+<p>这一次，我用了三个晚上。</p>
+<p>值得吗？我到现在也没有完全确定的答案，但过程中的几个判断，我觉得是可以复用的。</p>
+<h2>三个约束</h2>
+<p>动手之前我先给自己定了三条约束。它们几乎决定了后面所有的设计：</p>
+<ol><li><p><strong>没有构建步骤。</strong> 双击 <code>index.html</code> 就能读，不需要 Node，不需要等待热更新，也不存在「依赖装不上」的周一早晨。</p></li><li><p><strong>没有前端框架。</strong> 站点只有五个路由，用不上虚拟 DOM，也用不上状态管理库。</p></li><li><p><strong>内容必须可迁移。</strong> 文章就是 Markdown。哪天想搬到别的工具上，复制粘贴即可，不用写导出脚本。</p></li></ol>
+<blockquote><p>工具越简单，写作越容易发生。</p></blockquote>
+<p>这句话来自我自己的经验：过去两年写的文章，大部分都诞生于「打开编辑器就能写」的状态，而不是「先跑一下 dev server」。</p>
+<h2>没有构建意味着什么</h2>
+<p>没有构建，意味着<strong>部署就是一个复制动作</strong>。整个站点是几个 HTML、CSS、JavaScript 文件，扔到任何能放静态文件的地方都能跑：GitHub Pages、对象存储、一台闲置的服务器，甚至 U 盘。</p>
+<p>代价也很清楚：</p>
+<ul><li><p>路由只能用 hash（<code>#/post/xxx</code>），因为在本地文件协议下改不了路径；</p></li><li><p>不能用 ES Module 加载脚本，浏览器会以跨域为由拒绝；</p></li><li><p>不能用 <code>fetch</code> 读本地文件，所以文章必须随 HTML 一起加载。</p></li></ul>
+<p>于是文章被放在了不太常见的位置：一个 <code>type</code> 为 <code>text/markdown</code> 的脚本块里。浏览器不会执行它，也不会解析里面的尖括号——它就是一段带着 Markdown 语法的纯文本。页面加载时，一段一百多行的脚本把它读出来，解析 frontmatter，渲染成 HTML。</p>
+<p>看起来像 hack，但它满足了我最在意的一点：<strong>写作时，我面对的仍然是 Markdown</strong>。</p>
+<h2>设计上的四个决定</h2>
+<p>界面要简约，但我很怕那种「简约到只剩空白」的冷淡感。最后落在四个决定上：</p>
+<ul><li><p><strong>纸的颜色，不是白的颜色。</strong> 背景是偏暖的米白，压着一层极细的噪点。大面积留白如果不带温度，看久了会很累。</p></li><li><p><strong>标题用宋体。</strong> 中文衬线体天然带一点纸媒气质，和代码块里的等宽字体放在一起，阅读的节奏会变得很清楚。</p></li><li><p><strong>只有一个强调色。</strong> 陶土红。它只出现在链接、当前章节和少数分隔线上，其余全部交给灰度。</p></li><li><p><strong>用发丝线代替阴影。</strong> 层次靠一像素的线和留白区分，而不是靠「浮起来」。</p></li></ul>
+<p>细节上还塞了一些不显眼的东西：顶部的阅读进度、右侧跟随滚动的目录、代码块复制按钮、<code>⌘K</code> 搜索面板、深色模式、打印样式。它们都不喧哗，但会在你需要的时候出现。</p>
+<h2>代价</h2>
+<p>自己写，意味着所有东西都得自己实现。Markdown 解析器、代码高亮、全文搜索、目录跟随——加起来大概八百行 JavaScript。</p>
+<p>这些代码当然不如成熟库健壮：不支持脚注，不支持嵌套引用里的表格，遇到奇怪的语法会退化。但它们足够小，小到我能读懂每一行，出问题时知道该去看哪一行。</p>
+<p>还有一个更隐性的代价：<strong>没有评论</strong>。我暂时不打算加。如果一篇文章值得讨论，邮件比评论区更好。</p>
+<h2>所以为什么</h2>
+<p>因为博客首先是一个<strong>写作的地方</strong>，其次才是一个技术项目。</p>
+<p>当我用复杂的工具去承载它，维护工具本身就会变成目的；当我用最简单的方式去搭建它，我唯一能做的事就只剩写。</p>
+<p>这就是全部的理由。</p>]]></content:encoded>
+  </item>
+  <item>
+    <title>用 180 行实现一个可调试的状态机</title>
+    <link>https://chaosharm0212.github.io/blog/#/post/state-machine</link>
+    <guid isPermaLink="false">https://chaosharm0212.github.io/blog/#/post/state-machine</guid>
+    <pubDate>Tue, 18 Nov 2025 00:00:00 +0800</pubDate>
+    <description>当状态散落在十几个 if/else 里时，bug 会以「不可能发生的状态」的形式出现。手写一个最小状态机，顺便把时间旅行调试也装上。</description>
+    <category>JavaScript</category>
+    <category>架构</category>
+    <content:encoded><![CDATA[<p>一个真实的故事：某个表单页面出现过一次「提交按钮永久置灰」的线上问题。排查了两个小时，最后发现是两个布尔值同时为 <code>true</code>——而那个组合，任何人在写代码时都没想过会出现。</p>
+<p>问题的根源不是粗心，而是<strong>用多个布尔值描述一个本质上互斥的状态</strong>。</p>
+<div class="code"><div class="code__bar"><span class="code__lang">JS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-cm">// 看起来没问题，其实有 2⁴ 种组合，其中大部分没有意义</span>
+<span class="t-kw">const</span> state = {
+  isLoading: <span class="t-kw">false</span>,
+  isError: <span class="t-kw">false</span>,
+  isSuccess: <span class="t-kw">false</span>,
+  isSubmitting: <span class="t-kw">false</span>
+};</code></pre></div>
+<p>把它换成一个枚举，问题立刻消失一半：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">JS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-kw">const</span> state = <span class="t-str">&quot;idle&quot;</span>; <span class="t-cm">// idle | submitting | success | error</span></code></pre></div>
+<p>那天之后，我在遇到「三个以上状态」的地方，都会先画一张状态图，再写状态机。</p>
+<h2>最小实现</h2>
+<p>状态机不需要库。核心只有三件事：<strong>当前状态</strong>、<strong>事件到下一个状态的映射</strong>、<strong>状态变化时的通知</strong>。</p>
+<div class="code"><div class="code__bar"><span class="code__lang">JS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-kw">function</span> <span class="t-fn">createMachine</span>(config) {
+  <span class="t-kw">let</span> state = config.initial;
+  <span class="t-kw">const</span> listeners = <span class="t-kw">new</span> <span class="t-fn">Set</span>();
+  <span class="t-kw">const</span> history = [state];
+
+  <span class="t-kw">function</span> <span class="t-fn">send</span>(event) {
+    <span class="t-kw">const</span> handlers = config.states[state];
+    <span class="t-kw">if</span> (!handlers) <span class="t-kw">throw</span> <span class="t-kw">new</span> <span class="t-fn">Error</span>(<span class="t-str">&quot;未知状态: &quot;</span> + state);
+
+    <span class="t-kw">const</span> handler = handlers[event.type];
+    <span class="t-kw">const</span> next = <span class="t-kw">typeof</span> handler === <span class="t-str">&quot;function&quot;</span> ? <span class="t-fn">handler</span>(event, state) : handler;
+    <span class="t-kw">if</span> (!next || next === state) <span class="t-kw">return</span> state;
+
+    <span class="t-kw">if</span> (!config.states[next]) {
+      <span class="t-kw">throw</span> <span class="t-kw">new</span> <span class="t-fn">Error</span>(<span class="t-str">&quot;转移到了未声明的状态: &quot;</span> + next);
+    }
+
+    history.<span class="t-fn">push</span>(next);
+    state = next;
+    listeners.<span class="t-fn">forEach</span>(<span class="t-kw">function</span> (fn) {
+      <span class="t-fn">fn</span>(state, event);
+    });
+    <span class="t-kw">return</span> state;
+  }
+
+  <span class="t-kw">function</span> <span class="t-fn">subscribe</span>(fn) {
+    listeners.<span class="t-fn">add</span>(fn);
+    <span class="t-kw">return</span> <span class="t-kw">function</span> () {
+      listeners.<span class="t-kw">delete</span>(fn);
+    };
+  }
+
+  <span class="t-kw">return</span> {
+    send: send,
+    subscribe: subscribe,
+    <span class="t-kw">get</span> <span class="t-fn">state</span>() {
+      <span class="t-kw">return</span> state;
+    },
+    <span class="t-kw">get</span> <span class="t-fn">history</span>() {
+      <span class="t-kw">return</span> history.<span class="t-fn">slice</span>();
+    }
+  };
+}</code></pre></div>
+<p>六十行左右，已经能用。配置长这样：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">JS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-kw">const</span> formMachine = <span class="t-fn">createMachine</span>({
+  initial: <span class="t-str">&quot;idle&quot;</span>,
+  states: {
+    idle: { SUBMIT: <span class="t-str">&quot;submitting&quot;</span> },
+    submitting: { RESOLVE: <span class="t-str">&quot;success&quot;</span>, REJECT: <span class="t-str">&quot;error&quot;</span> },
+    success: { RESET: <span class="t-str">&quot;idle&quot;</span> },
+    error: { SUBMIT: <span class="t-str">&quot;submitting&quot;</span>, RESET: <span class="t-str">&quot;idle&quot;</span> }
+  }
+});</code></pre></div>
+<p>注意 <code>submitting</code> 状态里没有 <code>SUBMIT</code> 事件，所以重复点击不会产生任何转移——不必再写 <code>if (isSubmitting) return</code>。</p>
+<h2>让它可以被看见</h2>
+<p>状态机的第二个好处，是渲染层可以变得很笨：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">JS</span><button class="code__copy" type="button">复制</button></div><pre><code>formMachine.<span class="t-fn">subscribe</span>(<span class="t-kw">function</span> (state) {
+  <span class="t-fn">render</span>(state); <span class="t-cm">// 一个 switch，仅此而已</span>
+});</code></pre></div>
+<p>第三个好处是调试。因为我们记了 <code>history</code>，时间旅行几乎是免费的：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">JS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-kw">function</span> <span class="t-fn">replay</span>(machine, events) {
+  events.<span class="t-fn">forEach</span>(<span class="t-kw">function</span> (event) {
+    machine.<span class="t-fn">send</span>(event);
+  });
+  <span class="t-kw">return</span> machine.state;
+}</code></pre></div>
+<p>把用户的操作序列存下来，线上出问题时，可以在本地一字不差地重放一遍。比起在一堆 <code>console.log</code> 里猜，这大概快十倍。</p>
+<h2>什么时候不该用</h2>
+<p>状态机不是银弹。我给自己的判断线是：</p>
+<ul><li><p>只有两个状态、一个开关：用布尔值，别过度设计；</p></li><li><p>状态之间没有回边（不会退回）：线性流程，用步骤数组更直观；</p></li><li><p>状态超过十二个：该考虑拆分，而不是继续往一张表里塞。</p></li></ul>
+<blockquote><p>状态机解决的是「状态组合爆炸」，不是「代码组织问题」。状态数量很少时，它带来的只是额外的间接层。</p></blockquote>
+<h2>一个不那么显然的收益</h2>
+<p>写状态机的时候，你会被迫回答一个问题：<strong>这个产品到底有几个状态？</strong></p>
+<p>这个问题的答案，往往比对代码的改造更有价值。做上面那个表单时我发现，产品经理嘴里的「提交中」和「等待服务端确认」其实是两个状态，它们对用户的意义完全不同。</p>
+<p>页面上的一个 bug，最后变成了产品理解上的一个改进。这大概是抽象最好的样子。</p>]]></content:encoded>
+  </item>
+  <item>
+    <title>把首屏从 4.2 秒压到 1.1 秒：一次性能复盘</title>
+    <link>https://chaosharm0212.github.io/blog/#/post/lcp-audit</link>
+    <guid isPermaLink="false">https://chaosharm0212.github.io/blog/#/post/lcp-audit</guid>
+    <pubDate>Wed, 29 Oct 2025 00:00:00 +0800</pubDate>
+    <description>一次真实的首屏优化：不是照着清单打勾，而是先找到主线程上真正耗时的那几毫秒。附每一步的实测数据与判断依据。</description>
+    <category>性能</category>
+    <category>浏览器</category>
+    <category>工程化</category>
+    <content:encoded><![CDATA[<p>线上监控的 LCP p75 是 4.2 秒。这个数字维持了半年，每周的报表上都写着「待优化」，然后被下一件事盖过去。</p>
+<p>这次终于做了。过程比想象的简单，也比想象的更依赖测量。</p>
+<h2>先别急着改</h2>
+<p>性能优化最常见的错误，是照着清单改：加 preload、开 gzip、懒加载图片……改了一堆，LCP 只掉了 200ms，因为你并不知道瓶颈在哪。</p>
+<p>我做的第一件事是把 LCP 拆开。找一个真实用户的录屏，把首屏拆成三段：</p>
+<ul><li><p><strong>T0 到首字节</strong>：DNS、TLS、服务端渲染时间；</p></li><li><p><strong>首字节到文字出现</strong>：HTML 解析、CSS 阻塞、字体阻塞；</p></li><li><p><strong>文字出现到主图绘制</strong>：图片请求与主线程调度。</p></li></ul>
+<p>拆开之后就清楚了：问题不在服务端（首字节 180ms，很好），也不在图片（图片在 CDN 上，缓存命中），而在第二段。</p>
+<h2>四个发现</h2>
+<table><thead><tr><th>阶段</th><th>LCP (p75)</th><th>主要瓶颈</th></tr></thead><tbody><tr><td>优化前</td><td>4.2s</td><td>字体阻塞 + 首图未设尺寸</td></tr><tr><td>去掉阻塞字体</td><td>3.4s</td><td>长任务挤压主线程</td></tr><tr><td>首图预加载并设定尺寸</td><td>2.2s</td><td>第三方脚本</td></tr><tr><td>延迟第三方脚本</td><td>1.1s</td><td>无</td></tr></tbody></table>
+<h3>一、字体在阻塞渲染</h3>
+<p>我们用了自定义中文字体，在 CSS 里写了 <code>@font-face</code>，但没有设置 <code>font-display</code>。浏览器会等字体，最多等三秒。</p>
+<p>改法很简单：<code>font-display: swap</code>，同时用 <code>size-adjust</code> 让回退字体的度量接近目标字体，减少切换时的跳动。</p>
+<div class="code"><div class="code__bar"><span class="code__lang">CSS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-kw">@font-face</span> {
+  <span class="t-prop">font-family</span>: <span class="t-str">&quot;TextSerif&quot;</span>;
+  <span class="t-prop">src</span>: url(<span class="t-str">&quot;/fonts/text-serif.woff2&quot;</span>) format(<span class="t-str">&quot;woff2&quot;</span>);
+  <span class="t-prop">font-display</span>: swap;
+  <span class="t-prop">size-adjust</span>: <span class="t-num">96%</span>;
+}</code></pre></div>
+<p>这一项省了 800ms。</p>
+<h3>二、首图没有尺寸</h3>
+<p>看似低级，但我们确实漏了：图片只写了宽度 100%，没有 <code>width</code> / <code>height</code> 属性。图片加载完成后布局重排，LCP 的计时被打断。</p>
+<p>补上明确的比例和 <code>fetchpriority=&quot;high&quot;</code> 之后，浏览器能在发现它的第一时间开始下载。</p>
+<h3>三、主线程上的长任务</h3>
+<p>这是最难的一项。打开 Performance 面板，主线程上有三个超过 300ms 的任务，全部来自一个「通用」组件库的初始化——它做了大量与首屏无关的注册。</p>
+<p>处理方式是把它拆成两份：首屏需要的，和首屏之后才需要的。后者用 <code>requestIdleCallback</code> 加载。</p>
+<h3>四、第三方脚本</h3>
+<p>埋点、客服、A/B 实验，加起来 480KB，全都在文档头部同步加载。</p>
+<p>改成 <code>defer</code>，并把 A/B 实验的分组判定挪到服务端。这一项直接砍掉了 1.1 秒。</p>
+<h2>一条经验</h2>
+<blockquote><p>只要你在猜，就一定会优化错地方。先让数据说话。</p></blockquote>
+<p>这次优化没有用到任何技巧性的方案：没有预渲染，没有流式 SSR，没有边缘计算。只是一次次测量，然后改掉真正的瓶颈。</p>
+<p>有时候性能问题不是技术问题，而是<strong>没人愿意花两个小时盯着火焰图</strong>。</p>]]></content:encoded>
+  </item>
+  <item>
+    <title>TypeScript 类型体操的隐形成本</title>
+    <link>https://chaosharm0212.github.io/blog/#/post/ts-type-cost</link>
+    <guid isPermaLink="false">https://chaosharm0212.github.io/blog/#/post/ts-type-cost</guid>
+    <pubDate>Sun, 21 Sep 2025 00:00:00 +0800</pubDate>
+    <description>类型能表达一切，不代表应该表达一切。聊聊类型复杂度的边际收益，以及什么时候该主动收手。</description>
+    <category>TypeScript</category>
+    <category>工程化</category>
+    <content:encoded><![CDATA[<p>我们团队曾经有一个 <code>DeepRequired</code>，它能把任何嵌套对象的所有属性变成必填。写出来大概四十行递归条件类型，看起来很优雅。</p>
+<p>后来它被删掉了。原因是：它让 <code>tsc</code> 的编译时间从 8 秒变成 34 秒，而且几乎每次报错都指向它自己，而不是调用方。</p>
+<h2>一张隐形的账单</h2>
+<p>我做过一个小实验，同一个业务对象，三种写法：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">TS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-cm">// A：直接写类型</span>
+<span class="t-kw">interface</span> ConfigA {
+  retry: <span class="t-kw">number</span>;
+  endpoints: { name: <span class="t-kw">string</span>; url: <span class="t-kw">string</span> }[];
+}
+
+<span class="t-cm">// B：从常量推导</span>
+<span class="t-kw">const</span> config = {
+  retry: <span class="t-num">3</span>,
+  endpoints: [{ name: <span class="t-str">&quot;search&quot;</span>, url: <span class="t-str">&quot;/api/search&quot;</span> }]
+} <span class="t-kw">as</span> <span class="t-kw">const</span>;
+<span class="t-kw">type</span> ConfigB = <span class="t-kw">typeof</span> config;
+
+<span class="t-cm">// C：递归映射 + 条件分发</span>
+<span class="t-kw">type</span> DeepReadonly&lt;T&gt; = T <span class="t-kw">extends</span> (...args: <span class="t-kw">never</span>[]) =&gt; <span class="t-kw">unknown</span>
+  ? T
+  : T <span class="t-kw">extends</span> <span class="t-kw">object</span>
+  ? { <span class="t-kw">readonly</span> [K <span class="t-kw">in</span> <span class="t-kw">keyof</span> T]: DeepReadonly&lt;T[K]&gt; }
+  : T;
+<span class="t-kw">type</span> ConfigC = DeepReadonly&lt;ConfigA&gt;;</code></pre></div>
+<p>在 60 个文件引用这个类型时，<code>tsc --extendedDiagnostics</code> 给出的数字差异相当大：</p>
+<table><thead><tr><th>方案</th><th>类型检查耗时</th><th>报错可读性</th><th>新人理解成本</th></tr></thead><tbody><tr><td>A 手写</td><td>基线</td><td>好</td><td>无</td></tr><tr><td>B 推导</td><td>+6%</td><td>中</td><td>低</td></tr><tr><td>C 递归</td><td>+310%</td><td>差</td><td>高</td></tr></tbody></table>
+<p>真正的问题不是那 310%，而是<strong>报错</strong>。当 C 出错时，错误信息会展开成十几行 <code>Type instantiation is excessively deep</code> 或者一大坨映射类型，调用方根本不知道自己写错了什么。</p>
+<h2>类型是给人读的，不只是给编译器读的</h2>
+<p>这是我目前最相信的一条判断：</p>
+<blockquote><p>类型的第一个消费者是下一个读代码的人，第二个才是编译器。</p></blockquote>
+<p>所以我会问自己三个问题，任何一个答「否」就放弃花哨的写法：</p>
+<ol><li><p><strong>它是否防止了一类真实发生过的 bug？</strong> 而不是「理论上可能」的 bug。</p></li><li><p><strong>报错信息是否能让调用方看懂？</strong> 如果只能靠作者解释，那这个类型就是不可维护的。</p></li><li><p><strong>它的复杂度是否被复用了三次以上？</strong> 只用一次的高级类型，几乎一定是负资产。</p></li></ol>
+<h2>我更常用的三种「够用的复杂」</h2>
+<p>不是所有类型技巧都该被劝退。下面这几种我一直在用，收益明显而成本很低：</p>
+<ul><li><p><strong>字面量联合 + 穷尽检查。</strong> 让 <code>switch</code> 漏掉分支时直接编译报错，比任何文档都可靠。</p></li><li><p><strong><code>satisfies</code> 校验常量。</strong> 既保留字面量类型，又能在定义处检查结构，几乎不需要额外的类型定义。</p></li><li><p><strong>模板字面量类型做路由或事件名。</strong> 它们简单、可读，而且报错友好。</p></li></ul>
+<div class="code"><div class="code__bar"><span class="code__lang">TS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-kw">type</span> Route = <span class="t-str">`/${string}`</span>;
+<span class="t-kw">type</span> EventName = <span class="t-str">`on${Capitalize&lt;&quot;click&quot; | &quot;focus&quot; | &quot;blur&quot;&gt;}`</span>;
+
+<span class="t-kw">function</span> <span class="t-fn">on</span>(event: EventName, handler: () =&gt; <span class="t-kw">void</span>) {
+  <span class="t-cm">/* ... */</span>
+}
+
+<span class="t-fn">on</span>(<span class="t-str">&quot;onClick&quot;</span>, () =&gt; {}); <span class="t-cm">// 好</span>
+<span class="t-cm">// on(&quot;click&quot;, () =&gt; {}); // 报错，而且报错信息一眼能看懂</span></code></pre></div>
+<h2>收手的位置</h2>
+<p>类型系统的边际收益下降得非常快。当你在第十层条件分发里调试一个 <code>infer</code> 时，请诚实地问自己：这个类型是在保护使用者，还是在满足作者？</p>
+<p>我的答案是：如果它不能在一句话里解释清楚，那它就该被拆开，或者被删掉。</p>
+<div class="code"><div class="code__bar"><span class="code__lang">TS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-cm">// 与其写这个</span>
+<span class="t-kw">type</span> Flatten&lt;T&gt; = T <span class="t-kw">extends</span> (<span class="t-kw">infer</span> U)[] ? U : T <span class="t-kw">extends</span> <span class="t-kw">object</span> ? T[<span class="t-kw">keyof</span> T] : <span class="t-kw">never</span>;
+
+<span class="t-cm">// 不如写这个</span>
+<span class="t-kw">interface</span> Options {
+  timeout: <span class="t-kw">number</span>;
+  retries: <span class="t-kw">number</span>;
+}</code></pre></div>
+<p>后者能表达的东西更少，但所有人都能读懂，而「能读懂」本身就是一种正确性。</p>]]></content:encoded>
+  </item>
+  <item>
+    <title>我用 SQLite 做个人项目的数据层</title>
+    <link>https://chaosharm0212.github.io/blog/#/post/sqlite-practice</link>
+    <guid isPermaLink="false">https://chaosharm0212.github.io/blog/#/post/sqlite-practice</guid>
+    <pubDate>Wed, 13 Aug 2025 00:00:00 +0800</pubDate>
+    <description>一个只有几百个用户的单机项目，从「要不要上 Postgres」到「SQLite 加 WAL 就够了」。附全文检索、迁移与备份的实际写法。</description>
+    <category>SQLite</category>
+    <category>后端</category>
+    <content:encoded><![CDATA[<p>做一个小产品时，数据库选型往往比想象中更容易被过度设计。我的项目日活不到三百，读写比大概 9:1，跑在一台 2 核 4G 的机器上。</p>
+<p>最初我上了 Postgres，理由是「以后可能会扩展」。半年后我把它换成了 SQLite，理由是：<strong>以后大概不会扩展，而我现在每天都在为运维付利息</strong>。</p>
+<h2>为什么够用</h2>
+<p>SQLite 常被认为「玩具」，这完全是误解。它的实际边界很清楚：</p>
+<ul><li><p><strong>单机写入是串行的。</strong> WAL 模式下读写可以并发，但写入仍然一次一个。</p></li><li><p><strong>没有网络协议。</strong> 进程内直接读文件，省掉了序列化和连接池。</p></li><li><p><strong>事务是真事务。</strong> 崩溃安全、ACID，比很多「轻量方案」强。</p></li></ul>
+<p>对一个写少读多、单机部署、数据量几十 GB 以内的项目来说，这些限制都不是问题。而我换来的收益是：</p>
+<ul><li><p>备份 = 复制一个文件；</p></li><li><p>迁移环境 = 复制一个文件；</p></li><li><p>本地开发 = 不需要起服务；</p></li><li><p>冷启动 = 毫秒级。</p></li></ul>
+<h2>四条 PRAGMA</h2>
+<p>开库之后第一件事，是把这几个开关打开。它们决定了默认行为是否适合服务端场景。</p>
+<div class="code"><div class="code__bar"><span class="code__lang">SQL</span><button class="code__copy" type="button">复制</button></div><pre><code>PRAGMA journal_mode = WAL;      <span class="t-cm">-- 读写并发</span>
+PRAGMA synchronous = NORMAL;    <span class="t-cm">-- WAL 下的推荐值</span>
+PRAGMA foreign_keys = ON;       <span class="t-cm">-- 默认是关的，必须显式打开</span>
+PRAGMA busy_timeout = <span class="t-num">5000</span>;     <span class="t-cm">-- 写冲突时等待而不是立刻报错</span></code></pre></div>
+<p><code>synchronous = NORMAL</code> 是我唯一需要动脑的地方：它意味着断电时可能丢失最后几个事务，但不会损坏数据库。对个人项目，这个权衡很合理。</p>
+<h2>全文检索</h2>
+<p>SQLite 自带 FTS5。中文需要显式指定分词器，否则按空白切分几乎什么都搜不到：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">SQL</span><button class="code__copy" type="button">复制</button></div><pre><code>CREATE VIRTUAL TABLE notes_fts USING <span class="t-fn">fts5</span>(
+  title,
+  body,
+  content = <span class="t-str">&#39;notes&#39;</span>,
+  content_rowid = <span class="t-str">&#39;id&#39;</span>,
+  tokenize = <span class="t-str">&#39;trigram&#39;</span>
+);</code></pre></div>
+<p><code>trigram</code> 是 SQLite 3.34 之后内置的，不需要编译扩展，对中文足够好用。查询时用 <code>MATCH</code>：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">SQL</span><button class="code__copy" type="button">复制</button></div><pre><code>SELECT notes.*
+FROM notes
+JOIN notes_fts ON notes_fts.rowid = notes.id
+WHERE notes_fts MATCH ?
+ORDER BY rank
+LIMIT <span class="t-num">20</span>;</code></pre></div>
+<p>触发器负责同步。注意 FTS5 的外部内容表（<code>content=</code>）方案不会自动更新，必须手写：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">SQL</span><button class="code__copy" type="button">复制</button></div><pre><code>CREATE TRIGGER notes_ai AFTER INSERT ON notes BEGIN
+  INSERT INTO <span class="t-fn">notes_fts</span>(rowid, title, body)
+  VALUES (new.id, new.title, new.body);
+END;
+
+CREATE TRIGGER notes_ad AFTER DELETE ON notes BEGIN
+  INSERT INTO <span class="t-fn">notes_fts</span>(notes_fts, rowid, title, body)
+  VALUES (<span class="t-str">&#39;delete&#39;</span>, old.id, old.title, old.body);
+END;</code></pre></div>
+<p><code>&#39;delete&#39;</code> 那个特殊行很容易漏，漏了就会出现「已删除的文章还能被搜到」。</p>
+<h2>迁移</h2>
+<p>不用第三方库，<code>user_version</code> 就够：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">SQL</span><button class="code__copy" type="button">复制</button></div><pre><code>PRAGMA user_version;  <span class="t-cm">-- 读当前版本</span>
+PRAGMA user_version = <span class="t-num">3</span>; <span class="t-cm">-- 写下新版本</span></code></pre></div>
+<p>启动时读版本号，逐个执行未应用的迁移脚本，整个流程包在一个事务里。四十行代码，可读、可回滚、不引依赖。</p>
+<h2>备份</h2>
+<p>最优雅的备份命令是 <code>VACUUM INTO</code>（SQLite 3.27+），它导出一个一致性的快照，并且顺带整理碎片：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">SQL</span><button class="code__copy" type="button">复制</button></div><pre><code>VACUUM INTO <span class="t-str">&#39;/backups/app-2025-08-13.db&#39;</span>;</code></pre></div>
+<p>放进 cron，每天一次，配合保留最近三十份。就这么简单。</p>
+<h2>什么时候不该用</h2>
+<p>我也给自己写下了切换的条件，免得将来靠感觉决策：</p>
+<ul><li><p>需要多个写入进程并发（哪怕是「两个 worker」）；</p></li><li><p>需要跨机器读写同一份数据；</p></li><li><p>单表数据量进入十亿行级别，或需要复杂的分析查询；</p></li><li><p>需要数据库层面的权限与审计。</p></li></ul>
+<p>只要有一条命中，就该换成 Postgres。但在那之前，SQLite 让我少运维了大概几百个小时。</p>
+<blockquote><p>选型的本质不是「哪个更强」，而是「哪个更配得上你现在的规模」。</p></blockquote>]]></content:encoded>
+  </item>
+  <item>
+    <title>不写媒体查询的响应式</title>
+    <link>https://chaosharm0212.github.io/blog/#/post/modern-css</link>
+    <guid isPermaLink="false">https://chaosharm0212.github.io/blog/#/post/modern-css</guid>
+    <pubDate>Sun, 06 Jul 2025 00:00:00 +0800</pubDate>
+    <description>clamp、容器查询、grid auto-fit——三种手段能覆盖大部分响应式需求，而且比媒体查询更不容易写坏。</description>
+    <category>CSS</category>
+    <category>设计</category>
+    <content:encoded><![CDATA[<p>大多数响应式代码烂掉，不是因为写得不够多，而是因为断点写得太随意：<code>768px</code>、<code>1024px</code> 这些数字来自某款手机的尺寸，和你自己的版面没有任何关系。</p>
+<p>过去两年我逐渐把大部分媒体查询从代码里删掉，换成下面三种手段。</p>
+<h2>一、用 clamp 做流式尺寸</h2>
+<p>字号、间距、边距这类值，本来就不该在断点处突变。</p>
+<div class="code"><div class="code__bar"><span class="code__lang">CSS</span><button class="code__copy" type="button">复制</button></div><pre><code>h1 {
+  <span class="t-prop">font-size</span>: clamp(<span class="t-num">2rem</span>, <span class="t-num">4vw</span> + <span class="t-num">1rem</span>, <span class="t-num">4.5rem</span>);
+  <span class="t-prop">line-height</span>: <span class="t-num">1.1</span>;
+}
+
+<span class="t-sel">.hero</span> {
+  <span class="t-prop">padding-block</span>: clamp(<span class="t-num">2.5rem</span>, <span class="t-num">7vw</span>, <span class="t-num">6rem</span>);
+}</code></pre></div>
+<p><code>clamp(最小值, 首选值, 最大值)</code> 的意思是：让它在区间里随视口连续变化，但永远不越界。一个声明替代了三条断点规则，而且中间任何宽度都是合理的。</p>
+<p>一个小技巧：首选值用 <code>vw + rem</code> 而不是纯 <code>vw</code>，可以避免用户放大字号时文字不跟着变大。</p>
+<h2>二、grid auto-fit 自动列数</h2>
+<p>卡片列表是最典型的场景。不需要知道「几列」，只需要知道「一格最窄多少」：</p>
+<div class="code"><div class="code__bar"><span class="code__lang">CSS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-sel">.grid</span> {
+  <span class="t-prop">display</span>: grid;
+  <span class="t-prop">grid-template-columns</span>: repeat(auto-fit, minmax(min(<span class="t-num">260px</span>, <span class="t-num">100%</span>), <span class="t-num">1fr</span>));
+  <span class="t-prop">gap</span>: <span class="t-num">1.5rem</span>;
+}</code></pre></div>
+<p>三个细节值得记住：</p>
+<ul><li><p><code>auto-fit</code> 会折叠空轨道，<code>auto-fill</code> 不会——列表项少时用前者更自然；</p></li><li><p><code>minmax(min(260px, 100%), 1fr)</code> 里的 <code>min()</code> 是给窄屏兜底的。没有它，260px 的最小宽度会导致横向溢出；</p></li><li><p>配合 <code>gap</code> 而不是 <code>margin</code>，间距逻辑会简单很多。</p></li></ul>
+<h2>三、容器查询让组件自己决定</h2>
+<p>媒体查询问的是「视口多大」，而组件真正关心的是「我被放进多宽的容器里」。同一个卡片，在侧栏和在主区域应该长得不一样，但视口宽度对此一无所知。</p>
+<div class="code"><div class="code__bar"><span class="code__lang">CSS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-sel">.card-wrap</span> {
+  <span class="t-prop">container-type</span>: inline-size;
+}
+
+<span class="t-sel">.card</span> {
+  <span class="t-prop">display</span>: block;
+}
+
+<span class="t-kw">@container</span> (<span class="t-prop">min-width</span>: <span class="t-num">420px</span>) {
+  <span class="t-sel">.card</span> {
+    <span class="t-prop">display</span>: grid;
+    <span class="t-prop">grid-template-columns</span>: <span class="t-num">120px</span> <span class="t-num">1fr</span>;
+    <span class="t-prop">gap</span>: <span class="t-num">1.25rem</span>;
+    <span class="t-prop">align-items</span>: start;
+  }
+}</code></pre></div>
+<p>组件从此可以在任何上下文里复用，父级改布局时不需要回来补断点。</p>
+<h2>什么时候还是需要媒体查询</h2>
+<p>有三种情况，我仍然老老实实写媒体查询：</p>
+<ol><li><p><strong>布局语义变化。</strong> 侧栏从右侧移到下方、导航变成抽屉——这不是「同一个东西缩放」，而是「换了一个东西」。</p></li><li><p><strong>交互模式变化。</strong> 悬停效果只在有指针的设备上启用：<code>@media (hover: hover)</code>。</p></li><li><p><strong>打印与动效偏好。</strong> <code>@media print</code>、<code>@media (prefers-reduced-motion)</code>。</p></li></ol>
+<p>也就是说：<strong>连续变化用 clamp，重复排列用 grid，局部适配用容器查询，只有「换布局」才用媒体查询</strong>。</p>
+<p>把这条规则贴在脑子里之后，我的样式表里剩下的断点不足原来的三分之一，而视觉上反而更少出现「某个宽度下坏掉」的情况。</p>]]></content:encoded>
+  </item>
+  <item>
+    <title>写作是思考的副作用</title>
+    <link>https://chaosharm0212.github.io/blog/#/post/writing</link>
+    <guid isPermaLink="false">https://chaosharm0212.github.io/blog/#/post/writing</guid>
+    <pubDate>Mon, 02 Jun 2025 00:00:00 +0800</pubDate>
+    <description>我写得最慢的时候，往往不是没东西可写，而是想得还不够清楚。</description>
+    <category>随笔</category>
+    <category>写作</category>
+    <content:encoded><![CDATA[<p>有一段时间，我以为写作是这样一件事：先在脑子里想清楚，然后用文字表达出来。像把水从一个杯子倒进另一个杯子。</p>
+<p>后来发现不是。更多时候，我坐下来的时候只有一个模糊的感觉，写到第三段，才第一次知道自己在想什么。</p>
+<h2>一个反直觉的现象</h2>
+<p>我写得最慢的时候，往往不是没东西可写，而是<strong>想得还不够清楚</strong>。</p>
+<p>那种时候的症状很一致：一段话写了删、删了写；每句话都成立，但连起来不知道在说什么；想加一个「总之」，但不知道总体是什么。</p>
+<p>这时候继续写是没用的，因为问题不在语言，在判断。我得停下来，把那个糊涂的地方单独拿出来，问自己一句：<strong>我到底想说哪一句？</strong></p>
+<h2>想清楚的标准</h2>
+<p>我给自己定了一个很土的标准：能用一句话说出来，并且这句话能让别人反驳。</p>
+<p>不能反驳的句子通常没有信息量，比如「技术选型要权衡」「写作要真诚」。能反驳但不肯说的句子，往往才是真正的内容：</p>
+<ul><li><p>我们不用 Redux，因为它的收益在三个人以下的团队里是负的；</p></li><li><p>这个抽象不值得，因为它只被复用了一次；</p></li><li><p>我删掉了那篇文章，因为它只是把别人的结论换了种说法。</p></li></ul>
+<p>写完这句话，文章的结构往往就定了。剩下的所有段落，都是在为这句话提供证据、边界和反例。</p>
+<h2>我的做法</h2>
+<p>现在的流程大概是这样，很笨，但有效：</p>
+<ol><li><p><strong>先写一句话结论</strong>，放在标题下面。写不出来，就说明还不该动笔。</p></li><li><p><strong>列三到五个小标题</strong>，每个标题必须能独立成为一个判断，而不是一个话题。</p></li><li><p><strong>写完删掉三分之一</strong>。删掉的通常是两类：铺垫和表演。</p></li><li><p><strong>隔一天再读</strong>。如果第二天读不下去，别人也读不下去。</p></li></ol>
+<p>第三步是最难的。刚写完时，每一句都像是必要的，隔一天再看，一半的形容词都可以去掉。</p>
+<h2>写作和写代码</h2>
+<p>这两件事在我这里越来越像。</p>
+<p>好的函数名和好的小标题是同一件事：把一段难以名状的过程，压缩成一个可以复用的判断。删除重复的逻辑和删除重复的论述，用的是同一种直觉。而最像的一点是——<strong>你无法通过添加来让结构变清楚，只能通过删减</strong>。</p>
+<p>所以我有时会想，写文章大概是我做过的最好的代码训练：它逼着我持续地问「这句话到底在说什么」，而这正是读自己的代码时最该问的问题。</p>
+<h2>所以</h2>
+<p>如果有人问我怎么写技术文章，我能给出的唯一建议是：不要想着「写一篇文章」，去想「要说清楚一件什么事」。</p>
+<p>文章只是副产品。真正发生的事，是你终于把某件事想清楚了。</p>]]></content:encoded>
+  </item>
+</channel>
+</rss>
