@@ -3,9 +3,9 @@
 <channel>
   <title>知微</title>
   <link>https://chaosharm0212.github.io/blog/</link>
-  <description>这里是我存放技术笔记与零散思考的地方。多数文章关于前端工程、工具与取舍，也有一些关于写作和生活的随笔。不追热点，只写自己想明白的事。</description>
+  <description>这里是我存放技术笔记与零散思考的地方。多数文章关于 AI，也有一些关于写作和生活的随笔。</description>
   <language>zh-CN</language>
-  <lastBuildDate>Mon, 19 Oct 2026 03:13:50 +0000</lastBuildDate>
+  <lastBuildDate>Mon, 19 Oct 2026 06:16:30 +0000</lastBuildDate>
   <generator>tools/build-feed.mjs</generator>
   <atom:link href="https://chaosharm0212.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
   <item>
