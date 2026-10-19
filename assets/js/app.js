@@ -585,7 +585,9 @@
       '<div class="wrap">' +
       '<header class="page-head">' +
       '<p class="kicker">About</p><h1>关于我</h1>' +
-      '<p class="page-head__lede">一个普通写代码的人，和一个不太勤快的博客。</p>' +
+      '<p class="page-head__lede">' +
+      esc(SITE.aboutLede || "一个热爱思考的人，和一个不太勤快的博客。") +
+      "</p>" +
       "</header>" +
       '<div class="about-grid">' +
       '<div class="prose">' +
