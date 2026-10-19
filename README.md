@@ -20,9 +20,10 @@ blog/
 
 ## 1. 怎么看
 
-直接双击 `index.html`。
+- **线上**：<https://chaosharm0212.github.io/blog/>（GitHub Pages）
+- **本地**：直接双击 `index.html`
 
-想用本地服务器（地址更干净，部分浏览器行为更接近线上）：
+想在本地起个服务器（地址更干净，部分浏览器行为更接近线上）：
 
 ```bash
 python -m http.server 8080

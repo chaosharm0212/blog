@@ -50,7 +50,10 @@ $results += Probe ".nojekyll" "nojekyll 标记"
 Write-Host ("-" * 78)
 
 # 内容级检查：页面里是否引用了 RSS，以及 canonical 是否指向线上地址
-$html = & curl.exe @curlBase -w "" $Url 2>&1 | Out-String
+# 注意：这里必须单独发一次请求，不能复用上面带 -o NUL 的参数（否则取不到正文）
+$curlBody = @("-sS", "-L", "--max-time", "25")
+if ($proxy) { $curlBody += @("-x", $proxy) }
+$html = & curl.exe @curlBody $Url 2>&1 | Out-String
 $hasFeed = $html -match 'href="feed.xml"'
 $canonical = [regex]::Match($html, '<link rel="canonical" href="([^"]+)"')
 Write-Host ("{0}  页面引用 feed.xml" -f $(if ($hasFeed) { "OK  " } else { "WARN" }))
