@@ -120,6 +120,16 @@ git push -u origin main
 
 ## 发布之后要检查的三件事
 
+一次跑完下面这条，就能把首页、样式、脚本、RSS、robots.txt 全部探测一遍：
+
+```powershell
+pwsh tools/check-live.ps1
+# 或指定地址： pwsh tools/check-live.ps1 -Url https://example.com/blog/
+```
+
+它会自动读取本仓库 git 配置里的代理，避免 curl 直连被重置导致误判。全部 200 就说明可以用
+`https://chaosharm0212.github.io/blog/` 把链接发出去了。
+
 1. **打开的是 `https://` 而不是 `http://`**：GitHub Pages / Cloudflare / Netlify 都自动带证书；
 2. **深色模式、搜索、目录都正常**：它们是纯前端能力，不依赖服务器，托管后行为和在本地一致；
 3. **换到新地址后，浏览器可能有缓存**：改完文章如果看不到更新，`Ctrl + F5` 强刷一次。
