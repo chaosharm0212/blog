@@ -653,6 +653,100 @@ h4 {
   list-style: none;
 }
 
+/* 「精选」标记：列表行与文章页共用 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border: 1px solid var(--accent-2);
+  border-radius: 3px;
+  background: var(--accent-soft);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.7;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+/* 首页「精选」区：三张编辑式小卡，靠竖线分隔，不用卡片阴影 */
+.featured {
+  padding: clamp(30px, 4.5vw, 46px) 0 0;
+}
+
+.featured__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.feat {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 20px 0 22px;
+  border-bottom: 1px solid var(--line-2);
+  text-decoration: none;
+}
+
+.feat__num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+.feat__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.14rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--ink);
+  transition: color 0.3s var(--ease);
+}
+
+.feat__summary {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: var(--ink-3);
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.feat__meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  color: var(--ink-4);
+}
+
+.feat:hover .feat__title {
+  color: var(--accent);
+}
+
+@media (min-width: 860px) {
+  .featured__grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  .feat {
+    padding: 22px 26px 26px 0;
+    border-bottom: 0;
+  }
+
+  .feat + .feat {
+    padding-left: 26px;
+    border-left: 1px solid var(--line-2);
+  }
+}
+
+/* 精选区之后紧接着的列表，顶部留白收一点，避免两个区块头挤在一起 */
+.featured + .home-grid {
+  padding-top: clamp(26px, 3.4vw, 38px);
+}
+
 .row {
   position: relative;
   display: grid;

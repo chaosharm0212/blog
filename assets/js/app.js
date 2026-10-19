@@ -144,6 +144,10 @@
   }
 
   /* --------------------------------------------------------- 组件 */
+  function badge() {
+    return '<span class="badge">精选</span>';
+  }
+
   function postRow(p, index) {
     return (
       '<li class="row">' +
@@ -160,6 +164,7 @@
       esc(p.summary) +
       "</p>" +
       '<div class="row__meta">' +
+      (p.featured ? badge() + '<span class="dot">·</span>' : "") +
       "<time datetime=" +
       JSON.stringify(p.date) +
       ">" +
@@ -175,6 +180,43 @@
       "</div></div>" +
       '<span class="row__arrow" aria-hidden="true">→</span>' +
       "</li>"
+    );
+  }
+
+  /* 首页顶部的「精选」区：三张编辑式小卡，靠竖线分隔 */
+  function featuredBand(posts) {
+    if (!posts.length) return "";
+    return (
+      '<section class="featured">' +
+      '<div class="section-head"><h2>精选<span>' +
+      pad2(posts.length) +
+      "</span></h2></div>" +
+      '<div class="featured__grid">' +
+      posts
+        .map(function (p, i) {
+          return (
+            '<a class="feat" href="#/post/' +
+            encodeURIComponent(p.slug) +
+            '">' +
+            '<span class="feat__num">' +
+            pad2(i + 1) +
+            "</span>" +
+            '<h3 class="feat__title">' +
+            esc(p.title) +
+            "</h3>" +
+            '<p class="feat__summary">' +
+            esc(p.summary) +
+            "</p>" +
+            '<span class="feat__meta">' +
+            fmtShort(p.date) +
+            " · " +
+            p.minutes +
+            " 分钟</span>" +
+            "</a>"
+          );
+        })
+        .join("") +
+      "</div></section>"
     );
   }
 
@@ -290,17 +332,24 @@
 
   /* --------------------------------------------------------- 视图 */
   function viewHome() {
-    var latest = POSTS.slice(0, 5);
-    var featured = POSTS.filter(function (p) {
+    var featuredPosts = POSTS.filter(function (p) {
       return p.featured;
-    }).length;
+    });
+    var featuredCount = featuredPosts.length;
+    var bandPosts = featuredPosts.slice(0, 3);
+    var restPosts = POSTS.filter(function (p) {
+      return !p.featured;
+    });
+    /* 只有当"既精选又有非精选"时才分两段；全部精选时只留一个列表 */
+    var showBand = bandPosts.length > 0 && restPosts.length > 0;
+    var latest = (showBand ? restPosts : POSTS).slice(0, 5);
 
     var facts =
       "<li><b>" +
       POSTS.length +
       "</b> 篇文章</li>" +
       "<li><b>" +
-      featured +
+      featuredCount +
       "</b> 篇精选</li>" +
       "<li><b>" +
       TAGS.length +
@@ -330,9 +379,12 @@
       esc(SITE.latin || "") +
       "</span>" +
       "</section>" +
+      (showBand ? featuredBand(bandPosts) : "") +
       '<div class="home-grid">' +
       '<section class="stack">' +
-      '<div class="section-head"><h2>最近的文章<span>' +
+      '<div class="section-head"><h2>' +
+      (showBand ? "更多文章" : "最近的文章") +
+      "<span>" +
       pad2(latest.length) +
       '</span></h2><a href="#/posts">全部文章 →</a></div>' +
       '<ol class="rows">' +
@@ -503,6 +555,7 @@
       "</h1>" +
       (p.summary ? '<p class="post__summary">' + esc(p.summary) + "</p>" : "") +
       '<div class="post__meta">' +
+      (p.featured ? badge() + '<span class="dot">·</span>' : "") +
       "<span>" +
       p.minutes +
       " 分钟阅读</span>" +
@@ -534,7 +587,7 @@
   }
 
   function viewAbout() {
-    /* 第一段做「引子」（首字下沉 + 宋体），后两段收进引文式的竖线块里。
+    /* 第一段做「引子」（宋体 + 字号加大），后两段收进引文式的竖线块里。
        文字本身支持 **强调**、`代码`、[链接](url)，由 MD.inline 统一处理。 */
     var introParagraphs = (SITE.intro || []).map(function (t) {
       return MD.inline(t);
