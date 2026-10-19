@@ -4,16 +4,25 @@
 
 **没有构建步骤，没有依赖，没有 CDN。** 直接用浏览器打开 `index.html` 就能读。
 
+> **日常使用请看 [GUIDE.md](GUIDE.md)** —— 发文章、改资料、调样式、发布回滚、常见问题都在那里。
+> 本文件偏技术说明与设计取舍；部署细节在 [DEPLOY.md](DEPLOY.md)。
+
 ```
 blog/
 ├── index.html            ← 页面骨架 + 全部文章（Markdown 源文）
 ├── assets/
 │   ├── css/style.css     ← 设计令牌、排版、组件、暗色主题
-│   └── js/
-│       ├── site.js       ← 站点配置：名字、简介、链接、年表
-│       ├── markdown.js   ← Markdown 渲染 + 代码高亮（无依赖）
-│       └── app.js        ← 路由、视图、搜索、目录、进度
-└── README.md
+│   ├── js/
+│   │   ├── site.js       ← 站点配置：名字、简介、链接、年表
+│   │   ├── markdown.js   ← Markdown 渲染 + 代码高亮（无依赖）
+│   │   └── app.js        ← 路由、视图、搜索、目录、进度
+│   └── img/              ← 你自己的配图
+├── tools/
+│   ├── new-post.mjs      ← 新建文章
+│   ├── build-feed.mjs    ← 生成 RSS
+│   └── check-live.ps1    ← 部署后自检
+├── feed.xml              ← RSS（脚本生成）
+├── GUIDE.md / DEPLOY.md / README.md
 ```
 
 ---

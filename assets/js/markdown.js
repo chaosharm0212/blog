@@ -514,10 +514,12 @@
       if (!line.trim()) {
         var j = i + 1;
         while (j < lines.length && !lines[j].trim()) j += 1;
+        /* 空行之后：同级的新条目（松散列表）或者缩进的续写，都算同一个列表 */
+        var siblingItem = new RegExp("^[ ]{" + baseIndent + "}([-*+]|\\d+[.)])\\s+").test(lines[j] || "");
         var resume =
           j < lines.length &&
-          indentOf(lines[j]) >= contentIndent &&
-          !/^[ ]*(#{1,6}\s|>)/.test(lines[j]);
+          (siblingItem ||
+            (indentOf(lines[j]) >= contentIndent && !/^[ ]*(#{1,6}\s|>)/.test(lines[j])));
         if (resume) {
           block.push("");
           i += 1;
@@ -561,7 +563,11 @@
           box = /^\[[xX]\]/.test(firstLine) ? "☑ " : "☐ ";
           arr[0] = firstLine.replace(/^\[[ xX]\]\s+/, "");
         }
-        return "<li>" + box + renderBlocks(arr) + "</li>";
+        var inner = renderBlocks(arr);
+        /* 只有一段的列表项去掉 <p> 包裹，避免勾选框与文字被拆成两行 */
+        var onlyParagraph = /^<p>([\s\S]*)<\/p>$/.exec(inner);
+        if (onlyParagraph && !/<p>/.test(onlyParagraph[1])) inner = onlyParagraph[1];
+        return "<li>" + box + inner + "</li>";
       })
       .join("");
 

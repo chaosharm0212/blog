@@ -1389,6 +1389,16 @@ h4 {
   letter-spacing: 0.005em;
 }
 
+/* 正文里误用 # 一级标题时的兜底：按二级标题的样子显示，不进目录 */
+.prose h1 {
+  margin-top: 2.5em;
+  margin-bottom: 0.1em;
+  font-family: var(--font-display);
+  font-size: 1.62rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .prose h2::before {
   content: "";
   position: absolute;

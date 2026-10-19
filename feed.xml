@@ -5,7 +5,7 @@
   <link>https://chaosharm0212.github.io/blog/</link>
   <description>这里是我存放技术笔记与零散思考的地方。多数文章关于前端工程、工具与取舍，也有一些关于写作和生活的随笔。不追热点，只写自己想明白的事。</description>
   <language>zh-CN</language>
-  <lastBuildDate>Mon, 19 Oct 2026 02:41:18 +0000</lastBuildDate>
+  <lastBuildDate>Mon, 19 Oct 2026 03:13:50 +0000</lastBuildDate>
   <generator>tools/build-feed.mjs</generator>
   <atom:link href="https://chaosharm0212.github.io/blog/feed.xml" rel="self" type="application/rss+xml"/>
   <item>
@@ -22,18 +22,18 @@
 <p>值得吗？我到现在也没有完全确定的答案，但过程中的几个判断，我觉得是可以复用的。</p>
 <h2>三个约束</h2>
 <p>动手之前我先给自己定了三条约束。它们几乎决定了后面所有的设计：</p>
-<ol><li><p><strong>没有构建步骤。</strong> 双击 <code>index.html</code> 就能读，不需要 Node，不需要等待热更新，也不存在「依赖装不上」的周一早晨。</p></li><li><p><strong>没有前端框架。</strong> 站点只有五个路由，用不上虚拟 DOM，也用不上状态管理库。</p></li><li><p><strong>内容必须可迁移。</strong> 文章就是 Markdown。哪天想搬到别的工具上，复制粘贴即可，不用写导出脚本。</p></li></ol>
+<ol><li><strong>没有构建步骤。</strong> 双击 <code>index.html</code> 就能读，不需要 Node，不需要等待热更新，也不存在「依赖装不上」的周一早晨。</li><li><strong>没有前端框架。</strong> 站点只有五个路由，用不上虚拟 DOM，也用不上状态管理库。</li><li><strong>内容必须可迁移。</strong> 文章就是 Markdown。哪天想搬到别的工具上，复制粘贴即可，不用写导出脚本。</li></ol>
 <blockquote><p>工具越简单，写作越容易发生。</p></blockquote>
 <p>这句话来自我自己的经验：过去两年写的文章，大部分都诞生于「打开编辑器就能写」的状态，而不是「先跑一下 dev server」。</p>
 <h2>没有构建意味着什么</h2>
 <p>没有构建，意味着<strong>部署就是一个复制动作</strong>。整个站点是几个 HTML、CSS、JavaScript 文件，扔到任何能放静态文件的地方都能跑：GitHub Pages、对象存储、一台闲置的服务器，甚至 U 盘。</p>
 <p>代价也很清楚：</p>
-<ul><li><p>路由只能用 hash（<code>#/post/xxx</code>），因为在本地文件协议下改不了路径；</p></li><li><p>不能用 ES Module 加载脚本，浏览器会以跨域为由拒绝；</p></li><li><p>不能用 <code>fetch</code> 读本地文件，所以文章必须随 HTML 一起加载。</p></li></ul>
+<ul><li>路由只能用 hash（<code>#/post/xxx</code>），因为在本地文件协议下改不了路径；</li><li>不能用 ES Module 加载脚本，浏览器会以跨域为由拒绝；</li><li>不能用 <code>fetch</code> 读本地文件，所以文章必须随 HTML 一起加载。</li></ul>
 <p>于是文章被放在了不太常见的位置：一个 <code>type</code> 为 <code>text/markdown</code> 的脚本块里。浏览器不会执行它，也不会解析里面的尖括号——它就是一段带着 Markdown 语法的纯文本。页面加载时，一段一百多行的脚本把它读出来，解析 frontmatter，渲染成 HTML。</p>
 <p>看起来像 hack，但它满足了我最在意的一点：<strong>写作时，我面对的仍然是 Markdown</strong>。</p>
 <h2>设计上的四个决定</h2>
 <p>界面要简约，但我很怕那种「简约到只剩空白」的冷淡感。最后落在四个决定上：</p>
-<ul><li><p><strong>纸的颜色，不是白的颜色。</strong> 背景是偏暖的米白，压着一层极细的噪点。大面积留白如果不带温度，看久了会很累。</p></li><li><p><strong>标题用宋体。</strong> 中文衬线体天然带一点纸媒气质，和代码块里的等宽字体放在一起，阅读的节奏会变得很清楚。</p></li><li><p><strong>只有一个强调色。</strong> 陶土红。它只出现在链接、当前章节和少数分隔线上，其余全部交给灰度。</p></li><li><p><strong>用发丝线代替阴影。</strong> 层次靠一像素的线和留白区分，而不是靠「浮起来」。</p></li></ul>
+<ul><li><strong>纸的颜色，不是白的颜色。</strong> 背景是偏暖的米白，压着一层极细的噪点。大面积留白如果不带温度，看久了会很累。</li><li><strong>标题用宋体。</strong> 中文衬线体天然带一点纸媒气质，和代码块里的等宽字体放在一起，阅读的节奏会变得很清楚。</li><li><strong>只有一个强调色。</strong> 陶土红。它只出现在链接、当前章节和少数分隔线上，其余全部交给灰度。</li><li><strong>用发丝线代替阴影。</strong> 层次靠一像素的线和留白区分，而不是靠「浮起来」。</li></ul>
 <p>细节上还塞了一些不显眼的东西：顶部的阅读进度、右侧跟随滚动的目录、代码块复制按钮、<code>⌘K</code> 搜索面板、深色模式、打印样式。它们都不喧哗，但会在你需要的时候出现。</p>
 <h2>代价</h2>
 <p>自己写，意味着所有东西都得自己实现。Markdown 解析器、代码高亮、全文搜索、目录跟随——加起来大概八百行 JavaScript。</p>
@@ -135,7 +135,7 @@
 <p>把用户的操作序列存下来，线上出问题时，可以在本地一字不差地重放一遍。比起在一堆 <code>console.log</code> 里猜，这大概快十倍。</p>
 <h2>什么时候不该用</h2>
 <p>状态机不是银弹。我给自己的判断线是：</p>
-<ul><li><p>只有两个状态、一个开关：用布尔值，别过度设计；</p></li><li><p>状态之间没有回边（不会退回）：线性流程，用步骤数组更直观；</p></li><li><p>状态超过十二个：该考虑拆分，而不是继续往一张表里塞。</p></li></ul>
+<ul><li>只有两个状态、一个开关：用布尔值，别过度设计；</li><li>状态之间没有回边（不会退回）：线性流程，用步骤数组更直观；</li><li>状态超过十二个：该考虑拆分，而不是继续往一张表里塞。</li></ul>
 <blockquote><p>状态机解决的是「状态组合爆炸」，不是「代码组织问题」。状态数量很少时，它带来的只是额外的间接层。</p></blockquote>
 <h2>一个不那么显然的收益</h2>
 <p>写状态机的时候，你会被迫回答一个问题：<strong>这个产品到底有几个状态？</strong></p>
@@ -156,7 +156,7 @@
 <h2>先别急着改</h2>
 <p>性能优化最常见的错误，是照着清单改：加 preload、开 gzip、懒加载图片……改了一堆，LCP 只掉了 200ms，因为你并不知道瓶颈在哪。</p>
 <p>我做的第一件事是把 LCP 拆开。找一个真实用户的录屏，把首屏拆成三段：</p>
-<ul><li><p><strong>T0 到首字节</strong>：DNS、TLS、服务端渲染时间；</p></li><li><p><strong>首字节到文字出现</strong>：HTML 解析、CSS 阻塞、字体阻塞；</p></li><li><p><strong>文字出现到主图绘制</strong>：图片请求与主线程调度。</p></li></ul>
+<ul><li><strong>T0 到首字节</strong>：DNS、TLS、服务端渲染时间；</li><li><strong>首字节到文字出现</strong>：HTML 解析、CSS 阻塞、字体阻塞；</li><li><strong>文字出现到主图绘制</strong>：图片请求与主线程调度。</li></ul>
 <p>拆开之后就清楚了：问题不在服务端（首字节 180ms，很好），也不在图片（图片在 CDN 上，缓存命中），而在第二段。</p>
 <h2>四个发现</h2>
 <table><thead><tr><th>阶段</th><th>LCP (p75)</th><th>主要瓶颈</th></tr></thead><tbody><tr><td>优化前</td><td>4.2s</td><td>字体阻塞 + 首图未设尺寸</td></tr><tr><td>去掉阻塞字体</td><td>3.4s</td><td>长任务挤压主线程</td></tr><tr><td>首图预加载并设定尺寸</td><td>2.2s</td><td>第三方脚本</td></tr><tr><td>延迟第三方脚本</td><td>1.1s</td><td>无</td></tr></tbody></table>
@@ -223,10 +223,10 @@
 <p>这是我目前最相信的一条判断：</p>
 <blockquote><p>类型的第一个消费者是下一个读代码的人，第二个才是编译器。</p></blockquote>
 <p>所以我会问自己三个问题，任何一个答「否」就放弃花哨的写法：</p>
-<ol><li><p><strong>它是否防止了一类真实发生过的 bug？</strong> 而不是「理论上可能」的 bug。</p></li><li><p><strong>报错信息是否能让调用方看懂？</strong> 如果只能靠作者解释，那这个类型就是不可维护的。</p></li><li><p><strong>它的复杂度是否被复用了三次以上？</strong> 只用一次的高级类型，几乎一定是负资产。</p></li></ol>
+<ol><li><strong>它是否防止了一类真实发生过的 bug？</strong> 而不是「理论上可能」的 bug。</li><li><strong>报错信息是否能让调用方看懂？</strong> 如果只能靠作者解释，那这个类型就是不可维护的。</li><li><strong>它的复杂度是否被复用了三次以上？</strong> 只用一次的高级类型，几乎一定是负资产。</li></ol>
 <h2>我更常用的三种「够用的复杂」</h2>
 <p>不是所有类型技巧都该被劝退。下面这几种我一直在用，收益明显而成本很低：</p>
-<ul><li><p><strong>字面量联合 + 穷尽检查。</strong> 让 <code>switch</code> 漏掉分支时直接编译报错，比任何文档都可靠。</p></li><li><p><strong><code>satisfies</code> 校验常量。</strong> 既保留字面量类型，又能在定义处检查结构，几乎不需要额外的类型定义。</p></li><li><p><strong>模板字面量类型做路由或事件名。</strong> 它们简单、可读，而且报错友好。</p></li></ul>
+<ul><li><strong>字面量联合 + 穷尽检查。</strong> 让 <code>switch</code> 漏掉分支时直接编译报错，比任何文档都可靠。</li><li><strong><code>satisfies</code> 校验常量。</strong> 既保留字面量类型，又能在定义处检查结构，几乎不需要额外的类型定义。</li><li><strong>模板字面量类型做路由或事件名。</strong> 它们简单、可读，而且报错友好。</li></ul>
 <div class="code"><div class="code__bar"><span class="code__lang">TS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-kw">type</span> Route = <span class="t-str">`/${string}`</span>;
 <span class="t-kw">type</span> EventName = <span class="t-str">`on${Capitalize&lt;&quot;click&quot; | &quot;focus&quot; | &quot;blur&quot;&gt;}`</span>;
 
@@ -261,9 +261,9 @@
 <p>最初我上了 Postgres，理由是「以后可能会扩展」。半年后我把它换成了 SQLite，理由是：<strong>以后大概不会扩展，而我现在每天都在为运维付利息</strong>。</p>
 <h2>为什么够用</h2>
 <p>SQLite 常被认为「玩具」，这完全是误解。它的实际边界很清楚：</p>
-<ul><li><p><strong>单机写入是串行的。</strong> WAL 模式下读写可以并发，但写入仍然一次一个。</p></li><li><p><strong>没有网络协议。</strong> 进程内直接读文件，省掉了序列化和连接池。</p></li><li><p><strong>事务是真事务。</strong> 崩溃安全、ACID，比很多「轻量方案」强。</p></li></ul>
+<ul><li><strong>单机写入是串行的。</strong> WAL 模式下读写可以并发，但写入仍然一次一个。</li><li><strong>没有网络协议。</strong> 进程内直接读文件，省掉了序列化和连接池。</li><li><strong>事务是真事务。</strong> 崩溃安全、ACID，比很多「轻量方案」强。</li></ul>
 <p>对一个写少读多、单机部署、数据量几十 GB 以内的项目来说，这些限制都不是问题。而我换来的收益是：</p>
-<ul><li><p>备份 = 复制一个文件；</p></li><li><p>迁移环境 = 复制一个文件；</p></li><li><p>本地开发 = 不需要起服务；</p></li><li><p>冷启动 = 毫秒级。</p></li></ul>
+<ul><li>备份 = 复制一个文件；</li><li>迁移环境 = 复制一个文件；</li><li>本地开发 = 不需要起服务；</li><li>冷启动 = 毫秒级。</li></ul>
 <h2>四条 PRAGMA</h2>
 <p>开库之后第一件事，是把这几个开关打开。它们决定了默认行为是否适合服务端场景。</p>
 <div class="code"><div class="code__bar"><span class="code__lang">SQL</span><button class="code__copy" type="button">复制</button></div><pre><code>PRAGMA journal_mode = WAL;      <span class="t-cm">-- 读写并发</span>
@@ -309,7 +309,7 @@ PRAGMA user_version = <span class="t-num">3</span>; <span class="t-cm">-- 写下
 <p>放进 cron，每天一次，配合保留最近三十份。就这么简单。</p>
 <h2>什么时候不该用</h2>
 <p>我也给自己写下了切换的条件，免得将来靠感觉决策：</p>
-<ul><li><p>需要多个写入进程并发（哪怕是「两个 worker」）；</p></li><li><p>需要跨机器读写同一份数据；</p></li><li><p>单表数据量进入十亿行级别，或需要复杂的分析查询；</p></li><li><p>需要数据库层面的权限与审计。</p></li></ul>
+<ul><li>需要多个写入进程并发（哪怕是「两个 worker」）；</li><li>需要跨机器读写同一份数据；</li><li>单表数据量进入十亿行级别，或需要复杂的分析查询；</li><li>需要数据库层面的权限与审计。</li></ul>
 <p>只要有一条命中，就该换成 Postgres。但在那之前，SQLite 让我少运维了大概几百个小时。</p>
 <blockquote><p>选型的本质不是「哪个更强」，而是「哪个更配得上你现在的规模」。</p></blockquote>]]></content:encoded>
   </item>
@@ -343,7 +343,7 @@ PRAGMA user_version = <span class="t-num">3</span>; <span class="t-cm">-- 写下
   <span class="t-prop">gap</span>: <span class="t-num">1.5rem</span>;
 }</code></pre></div>
 <p>三个细节值得记住：</p>
-<ul><li><p><code>auto-fit</code> 会折叠空轨道，<code>auto-fill</code> 不会——列表项少时用前者更自然；</p></li><li><p><code>minmax(min(260px, 100%), 1fr)</code> 里的 <code>min()</code> 是给窄屏兜底的。没有它，260px 的最小宽度会导致横向溢出；</p></li><li><p>配合 <code>gap</code> 而不是 <code>margin</code>，间距逻辑会简单很多。</p></li></ul>
+<ul><li><code>auto-fit</code> 会折叠空轨道，<code>auto-fill</code> 不会——列表项少时用前者更自然；</li><li><code>minmax(min(260px, 100%), 1fr)</code> 里的 <code>min()</code> 是给窄屏兜底的。没有它，260px 的最小宽度会导致横向溢出；</li><li>配合 <code>gap</code> 而不是 <code>margin</code>，间距逻辑会简单很多。</li></ul>
 <h2>三、容器查询让组件自己决定</h2>
 <p>媒体查询问的是「视口多大」，而组件真正关心的是「我被放进多宽的容器里」。同一个卡片，在侧栏和在主区域应该长得不一样，但视口宽度对此一无所知。</p>
 <div class="code"><div class="code__bar"><span class="code__lang">CSS</span><button class="code__copy" type="button">复制</button></div><pre><code><span class="t-sel">.card-wrap</span> {
@@ -365,7 +365,7 @@ PRAGMA user_version = <span class="t-num">3</span>; <span class="t-cm">-- 写下
 <p>组件从此可以在任何上下文里复用，父级改布局时不需要回来补断点。</p>
 <h2>什么时候还是需要媒体查询</h2>
 <p>有三种情况，我仍然老老实实写媒体查询：</p>
-<ol><li><p><strong>布局语义变化。</strong> 侧栏从右侧移到下方、导航变成抽屉——这不是「同一个东西缩放」，而是「换了一个东西」。</p></li><li><p><strong>交互模式变化。</strong> 悬停效果只在有指针的设备上启用：<code>@media (hover: hover)</code>。</p></li><li><p><strong>打印与动效偏好。</strong> <code>@media print</code>、<code>@media (prefers-reduced-motion)</code>。</p></li></ol>
+<ol><li><strong>布局语义变化。</strong> 侧栏从右侧移到下方、导航变成抽屉——这不是「同一个东西缩放」，而是「换了一个东西」。</li><li><strong>交互模式变化。</strong> 悬停效果只在有指针的设备上启用：<code>@media (hover: hover)</code>。</li><li><strong>打印与动效偏好。</strong> <code>@media print</code>、<code>@media (prefers-reduced-motion)</code>。</li></ol>
 <p>也就是说：<strong>连续变化用 clamp，重复排列用 grid，局部适配用容器查询，只有「换布局」才用媒体查询</strong>。</p>
 <p>把这条规则贴在脑子里之后，我的样式表里剩下的断点不足原来的三分之一，而视觉上反而更少出现「某个宽度下坏掉」的情况。</p>]]></content:encoded>
   </item>
@@ -386,11 +386,11 @@ PRAGMA user_version = <span class="t-num">3</span>; <span class="t-cm">-- 写下
 <h2>想清楚的标准</h2>
 <p>我给自己定了一个很土的标准：能用一句话说出来，并且这句话能让别人反驳。</p>
 <p>不能反驳的句子通常没有信息量，比如「技术选型要权衡」「写作要真诚」。能反驳但不肯说的句子，往往才是真正的内容：</p>
-<ul><li><p>我们不用 Redux，因为它的收益在三个人以下的团队里是负的；</p></li><li><p>这个抽象不值得，因为它只被复用了一次；</p></li><li><p>我删掉了那篇文章，因为它只是把别人的结论换了种说法。</p></li></ul>
+<ul><li>我们不用 Redux，因为它的收益在三个人以下的团队里是负的；</li><li>这个抽象不值得，因为它只被复用了一次；</li><li>我删掉了那篇文章，因为它只是把别人的结论换了种说法。</li></ul>
 <p>写完这句话，文章的结构往往就定了。剩下的所有段落，都是在为这句话提供证据、边界和反例。</p>
 <h2>我的做法</h2>
 <p>现在的流程大概是这样，很笨，但有效：</p>
-<ol><li><p><strong>先写一句话结论</strong>，放在标题下面。写不出来，就说明还不该动笔。</p></li><li><p><strong>列三到五个小标题</strong>，每个标题必须能独立成为一个判断，而不是一个话题。</p></li><li><p><strong>写完删掉三分之一</strong>。删掉的通常是两类：铺垫和表演。</p></li><li><p><strong>隔一天再读</strong>。如果第二天读不下去，别人也读不下去。</p></li></ol>
+<ol><li><strong>先写一句话结论</strong>，放在标题下面。写不出来，就说明还不该动笔。</li><li><strong>列三到五个小标题</strong>，每个标题必须能独立成为一个判断，而不是一个话题。</li><li><strong>写完删掉三分之一</strong>。删掉的通常是两类：铺垫和表演。</li><li><strong>隔一天再读</strong>。如果第二天读不下去，别人也读不下去。</li></ol>
 <p>第三步是最难的。刚写完时，每一句都像是必要的，隔一天再看，一半的形容词都可以去掉。</p>
 <h2>写作和写代码</h2>
 <p>这两件事在我这里越来越像。</p>
