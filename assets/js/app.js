@@ -534,11 +534,26 @@
   }
 
   function viewAbout() {
-    var intro = (SITE.intro || [])
-      .map(function (t) {
-        return "<p>" + esc(t) + "</p>";
-      })
-      .join("");
+    /* 第一段做「引子」（首字下沉 + 宋体），后两段收进引文式的竖线块里。
+       文字本身支持 **强调**、`代码`、[链接](url)，由 MD.inline 统一处理。 */
+    var introParagraphs = (SITE.intro || []).map(function (t) {
+      return MD.inline(t);
+    });
+    var intro = introParagraphs.length
+      ? '<section class="intro">' +
+        '<p class="intro__lead">' + introParagraphs[0] + "</p>" +
+        (introParagraphs.length > 1
+          ? '<div class="intro__body">' +
+            introParagraphs
+              .slice(1)
+              .map(function (t) {
+                return "<p>" + t + "</p>";
+              })
+              .join("") +
+            "</div>"
+          : "") +
+        "</section>"
+      : "";
 
     var timeline = (SITE.timeline || [])
       .map(function (item) {

@@ -2131,6 +2131,66 @@ h4 {
   }
 }
 
+/* 关于页开头的自我介绍：首字下沉的引子 + 引文式的后两段 */
+.intro {
+  margin: 0;
+  padding-bottom: 1.7em;
+  border-bottom: 1px solid var(--line);
+}
+
+.intro__lead {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.08rem, 1.4vw, 1.26rem);
+  line-height: 1.92;
+  letter-spacing: 0.012em;
+  color: var(--ink);
+}
+
+.intro__lead::first-letter {
+  float: left;
+  margin: 0.12em 0.4em 0.08em 0;
+  padding: 0.16em 0.24em 0.1em;
+  font-size: 1.62em;
+  line-height: 1.2;
+  font-weight: 600;
+  color: var(--accent);
+  border: 1px solid var(--line-strong);
+  background: var(--paper-2);
+}
+
+.intro strong {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.intro__body {
+  margin-top: 1.55em;
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
+
+.intro__body > p {
+  margin: 0;
+  font-size: 0.97rem;
+  line-height: 1.95;
+  color: var(--ink-2);
+}
+
+.intro__body > p + p {
+  margin-top: 0.95em;
+}
+
+@media (max-width: 640px) {
+  .intro__lead::first-letter {
+    font-size: 2.5em;
+  }
+
+  .intro__body {
+    padding-left: 15px;
+  }
+}
+
 .stack-list {
   display: flex;
   flex-wrap: wrap;
@@ -2139,7 +2199,6 @@ h4 {
   padding: 0;
   list-style: none;
 }
-
 .stack-list li {
   padding: 4px 10px;
   border: 1px solid var(--line);
