@@ -607,7 +607,6 @@
       "<h2>关于这个站点</h2>" +
       "<p>这个站点是手写的：没有构建步骤，没有框架，没有数据库。文章是 Markdown，放在一个 <code>script</code> 标签里，浏览器打开 <code>index.html</code> 就能读。之所以这么做，是因为我曾经花了太多时间折腾博客本身，而不是写文章。</p>" +
       "<blockquote>工具越简单，写作越容易发生。</blockquote>" +
-      "<p>如果你也想有一个这样的地方，直接拿走即可——它没有秘密，也没有依赖。</p>" +
       "</div>" +
       '<aside class="rail">' +
       '<div class="card"><p class="card__label">联系</p><ul class="now-list">' +
